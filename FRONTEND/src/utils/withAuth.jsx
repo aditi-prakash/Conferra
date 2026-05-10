@@ -14,9 +14,13 @@ const withAuth = (WrappedComponent ) => {
 
         useEffect(() => {
             if(!isAuthenticated()) {
-                router("/auth")
+                router("/auth?mode=signin")
             }
-        }, [])
+        }, [router])
+
+        if (!isAuthenticated()) {
+            return null;
+        }
 
         return <WrappedComponent {...props} />
     }
