@@ -86,7 +86,7 @@ export const connectToSocket = (server) => {
     });
 
     socket.on("chat-message", (payload, legacySender) => {
-      const room = findRoomBySocketId(socket.id);
+      const room = socket.data.room || findRoomBySocketId(socket.id);
       if (!room) return;
 
       if (!messages[room]) {

@@ -20,7 +20,10 @@ const login = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({ username: username.trim() });
+    const inputClean = username.trim();
+    const user = await User.findOne({
+      $or: [{ username: inputClean }, { email: inputClean.toLowerCase() }],
+    });
     if (!user) {
       return res.status(httpStatus.NOT_FOUND).json({
         message: "User not found",
@@ -237,5 +240,38 @@ const addToHistory = async (req, res) => {
   }
 };
 
+const getProfile = async (req, res) => {
+  const token = getTokenFromRequest(req);
 
-export { login, register, getUserHistory, addToHistory, updateProfile }
+  if (!token) {
+    return res.status(httpStatus.UNAUTHORIZED).json({
+      message: "Authentication token is required",
+      code: "TOKEN_MISSING",
+    });
+  }
+
+  try {
+    const user = await User.findOne({ token });
+    if (!user) {
+      return res.status(httpStatus.UNAUTHORIZED).json({
+        message: "Invalid session. Please login again",
+        code: "TOKEN_INVALID",
+      });
+    }
+
+    return res.status(httpStatus.OK).json({
+      user: {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+      },
+    });
+  } catch (e) {
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: "Something went wrong while fetching user profile",
+    });
+  }
+};
+
+export { login, register, getUserHistory, addToHistory, updateProfile, getProfile }

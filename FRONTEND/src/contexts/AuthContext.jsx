@@ -57,13 +57,36 @@ export const AuthProvider = ({ children }) => {
       return "User already exists. Please login instead.";
     }
     if (message) return message;
-    return "Authentication failed. Please try again.";
+    return "Authentication failed. Please check backend connection and credentials.";
   };
 
   useEffect(() => {
     document.body.setAttribute("data-theme", isDarkMode ? "dark" : "light");
     localStorage.setItem("themeMode", isDarkMode ? "dark" : "light");
   }, [isDarkMode]);
+
+  useEffect(() => {
+    const verifyExistingToken = async () => {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) return;
+
+      try {
+        const res = await client.get("/get_profile", {
+          headers: { Authorization: `Bearer ${storedToken}` },
+        });
+        if (res.data?.user) {
+          setUserData(res.data.user);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+        }
+      } catch (err) {
+        if (err?.response?.status === httpStatus.UNAUTHORIZED) {
+          clearSession();
+        }
+      }
+    };
+
+    verifyExistingToken();
+  }, []);
 
   const handleRegister = async (username, email, password) => {
     try {
@@ -130,6 +153,7 @@ export const AuthProvider = ({ children }) => {
         clearSession();
         router("/auth?mode=signin");
       }
+      console.warn("Failed to record meeting activity:", err?.message || err);
       throw err;
     }
   };
@@ -174,4 +198,4 @@ export const AuthProvider = ({ children }) => {
   );
 
   return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;
-};
+};

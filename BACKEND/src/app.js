@@ -33,9 +33,20 @@ app.get("/home", (req, res) => {
 const start = async () => {
   await connectDB();
 
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(
+        `\n[Error] Port ${app.get("port")} is already in use. Please close the process running on port ${app.get("port")} or specify a different PORT in .env.\n`
+      );
+      process.exit(1);
+    } else {
+      console.error("Server error:", err);
+    }
+  });
+
   server.listen(app.get("port"), () => {
     console.log(`LISTENING ON PORT ${app.get("port")}`);
   });
 };
 
-start();
+start();

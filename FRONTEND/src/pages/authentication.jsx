@@ -87,17 +87,18 @@ export default function Authentication() {
                 </Avatar>
 
                 <div>
-                    <Button variant={formState === 0 ? "contained" : "text"} onClick={() => { setFormState(0); setError(""); }}>
+                    <Button variant={formState === 0 ? "contained" : "text"} onClick={() => { setFormState(0); setError(""); setMessage(""); }}>
                         Sign In
                     </Button>
 
-                    <Button variant={formState === 1 ? "contained" : "text"} onClick={() => { setFormState(1); setError(""); }}>
+                    <Button variant={formState === 1 ? "contained" : "text"} onClick={() => { setFormState(1); setError(""); setMessage(""); }}>
                         Sign Up
                     </Button>
                 </div>
                 <Typography variant="body2" sx={{ mt: 2, color: "text.secondary", textAlign: "center" }}>
-                    No pre-created credentials are required. Use <b>Sign Up</b> to create your account,
-                    then login with the same username and password.
+                    {formState === 0
+                      ? "Sign in with your username or email address."
+                      : "Create a new account with a unique username, email, and password."}
                 </Typography>
 
                 <Box component="form" sx={{ mt: 3 }} onSubmit={handleAuth}>
@@ -106,7 +107,7 @@ export default function Authentication() {
                         required
                         fullWidth
                         id="username"
-                        label="Username"
+                        label={formState === 0 ? "Username or Email" : "Username"}
                         name="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -117,7 +118,7 @@ export default function Authentication() {
                             required
                             fullWidth
                             id="email"
-                            label="Email"
+                            label="Email Address"
                             name="email"
                             type="email"
                             value={email}
@@ -137,11 +138,11 @@ export default function Authentication() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
 
-                    {error ? <Alert severity="error">{error}</Alert> : null}
+                    {error ? <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert> : null}
                     {message ? <Alert severity="success" sx={{ mt: 1 }}>{message}</Alert> : null}
 
-                    <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                     {loading ? "Please wait..." : (formState === 0 ?"LOGIN" : "Register")}
+                    <Button type="submit" fullWidth variant="contained" disabled={loading} sx={{ mt: 3, mb: 2, bgcolor: "#d97500" }}>
+                        {loading ? "Please wait..." : (formState === 0 ? "LOGIN" : "SIGN UP")}
                     </Button>
                 </Box>
             </Box>

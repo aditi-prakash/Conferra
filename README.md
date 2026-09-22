@@ -57,5 +57,6 @@ npm run dev
 
 Once both servers are running, you can open `http://localhost:5173` in your browser to start using Conferra!
 
-## Author
+````````````````````## Author
 Developed by Aditi Prakash.
+````````````````````

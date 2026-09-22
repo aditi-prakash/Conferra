@@ -24,6 +24,7 @@ import EventIcon from "@mui/icons-material/Event";
 import HistoryIcon from "@mui/icons-material/History";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import { AuthContext } from "../contexts/AuthContext";
+import NotificationCenter from "../components/NotificationCenter";
 
 function HomeComponent() {
   const navigate = useNavigate();
@@ -36,10 +37,10 @@ function HomeComponent() {
   const joinMeeting = async (code) => {
     try {
       await addToUserHistory(code);
-      navigate(`/meeting/${code}`);
     } catch (e) {
-      setError(e?.response?.data?.message || "Unable to join meeting");
+      console.warn("Could not record meeting history:", e);
     }
+    navigate(`/meeting/${code}`);
   };
 
   const handleJoinVideoCall = async () => {
@@ -76,10 +77,8 @@ function HomeComponent() {
               Welcome back, {userData?.name || userData?.username || "User"}
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1}>
-            <IconButton sx={{ bgcolor: isDarkMode ? "rgba(255,255,255,0.14)" : "rgba(21,40,79,0.1)", color: fg }}>
-              <NotificationsNoneIcon />
-            </IconButton>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <NotificationCenter isDarkMode={isDarkMode} userData={userData} navigate={navigate} />
             <IconButton onClick={() => navigate("/profile")} sx={{ bgcolor: isDarkMode ? "rgba(255,255,255,0.14)" : "rgba(21,40,79,0.1)", color: fg }}>
               <Avatar sx={{ bgcolor: "#d97500", width: 32, height: 32 }}>
                 {(userData?.name || userData?.username || "U").charAt(0).toUpperCase()}
