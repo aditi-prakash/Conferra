@@ -27,12 +27,12 @@ const removeSocketFromRoom = (io, socket, room) => {
   }
 };
 
-export const connectToSocket = (server) => {
+export const connectToSocket = (server, allowedOrigins = ["*"]) => {
   const io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
-      allowedHeaders: ["*"],
+      allowedHeaders: ["Content-Type", "Authorization"],
       credentials: true,
     },
   });
